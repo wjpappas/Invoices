@@ -1,0 +1,28 @@
+Rodda Paint Co.
+NET 30
+Rodda Paint Co.
+P.O. Box 24425
+Pasadena
+CA
+91185-4425
+10
+(ITEM DESCRIPTION\s+)QUANTITY
+(.*REMIT TO:)
+.*INVOICE DATE\s+:\s*(\S+\d{4})
+TERMS:\s(\w*.*),\w*.*$
+.*INVOICE NUMBER\s*:\s*(\d{6,8})$
+PURCHASE ORDER\s+:\s(\w*.*)\s+INVOICE TERMS\s+:\s(\W*.*)
+(Pasadena)
+CUSTOMER ACCOUNT\s+:\s*(\d{6})
+(^\S{4,11})\s\s+(.*)
+\s+(\d+)([-]*)\s+\S+\s+([\*]*)\s*([-]*[\d]*[.][\d]{2})\s+([-]*[\d]*[.][\d]{2})([-]*)$
+Keyed#\s+.{32}|Color#\s+.{32}|Match#\s+.{32}
+(DISCOUNT).*([-][\d]+[.][\d]{2})
+.*(TAX\s+:\s+)([\d]*[.][\d]{2})*[-]*$
+(\S{3,11})\s+PAINTCARE FEE\s+[\d]+\s+\S{2,3}\s+[-]*[,\d]*[.][\d]{2}\s+([-]*[,\d]*[.][\d]{2})$
+2
+3
+1
+2
+4
+

@@ -1,0 +1,27 @@
+The Sherwin-Williams Company
+2% due 10th
+The Sherwin-Williams Company
+1230 S. 1st St.
+Yakima
+WA
+98902
+10
+(DESCRIPTION\s+)
+THE SHERWIN WILLIAMS CO\.
+DATE:\s(\w*.*)$
+TERMS:\s(\w*.*),\w*.*$
+No\. ([\d]{4}[-][\d])$
+PO#\s(\w*.*)$
+.*(CREDIT|CORRECT|CHARGE)\s*$
+^\s*(\D+[ \D*])( WA \d{5} \d*[^WA 98108 \d*])
+(^\s{2,6}(\d{3,4}[-]\d{4,5})\s+).*
+(\s+)(\d+)(\s+)([-]*[\d]+[.][\d]{2})([\ *]*\s+)([-]*[\d]+[.][\d]{2})([N]*)$
+Color:.*$|Custom:.*$|\s{20}\d{4}-\d{5}\s\S\S+.*$
+(DISCOUNT).*([-][\d]+[.][\d]{2})$
+.*(SALES TAX:)\S+\s+([-]*[\d]+[.][\d]{2})$
+(\s*\d+\s+)(PAINT RECYCLING FEE)(\s+\d+\s+[-]*[\d]+[.][\d]{2}[\ *]*\s+)([-]*[\d]+[.][\d]{2})([N]*)
+4
+7
+2
+2
+4
