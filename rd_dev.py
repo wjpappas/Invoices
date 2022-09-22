@@ -1,3 +1,14 @@
+#   Read configuration file
+#   #   Vendor address info
+#   #   Regex patterns unique to vendor data
+#   #   index's unique to vendor output
+#   Header parsing
+#   #   Read and map header values into output
+#
+#
+#
+#
+#
 import re
 import csv
 import sys
@@ -14,12 +25,14 @@ outname = ((re.compile(outputname_x)).search(ifile_name)).group(1)+'.csv'
 outputFile = open(outname, 'w')
 outputWriter = csv.writer(outputFile)
 
+#   Output list templates
 qb_record = ['','','','','','','','','','','','','','','','','','','','','','','','','','','','Y',' ']
 qb_header = ['Vendor','Transaction Date','RefNumber','Bill Due','Terms','Memo','Address Line1','Address Line2',
 'Address Line3','Address Line4','Address City','Address State','Address PostalCode','Address Country','Vendor Acct No',
 'Expenses Account','Expenses Amount','Expenses Memo','Expenses Class','Expenses Customer','Expenses Billable','Items Item',
 'Items Qty','Items Description','Items Cost','Items Class','Items Customer','Items Billable','AP Account']
 
+#   Keys mapping update and output lists
 record_keys = ['name', 'trans_date', 'ref_num', 'bill_due', 'terms', 'memo', 'add_line1', 'add_line2', 'add_line3', 'add_line4', 'add_city', 'add_state', 'postal_code', 'country', 'acct_no', 'exp_acct', 'exp_amt', 'exp_memo', 'exp_class', 'exp_cust', 'exp_bill', 'i_items', 'i_qty', 'i_desc', 'i_cost', 'i-class', 'i_cust', 'i_bill', 'ap_acct']
 vendor_keys = ['name', 'terms', 'memo', 'add_line1', 'add_city', 'add_state', 'postal_code']
 update_keys = ['i_items', 'i_qty', 'i_desc', 'i_cost']
@@ -145,8 +158,15 @@ def print_record(file, record_dict, record_keys):
     file.writerow(out_list)
     return #print("hello, print record")
 
+def prt_value(item, qty, desc, value, r_dict, p_list):
+    if value != 0.00:
+        u_list = [item, qty, desc, '{:.2f}'.format(value)]
+        update_dict(r_dict, p_list[0], u_list)
+        print_record(p_list[1], r_dict, p_list[2])
+
 header_dict = set_dict(record_keys, qb_header)
 print_record(outputWriter, header_dict, record_keys)
+prt_list = [update_keys, outputWriter, record_keys]
 
 vendor_data = read_vendor(ifile_vendor)
 vendor_val = vendor_data[0]
@@ -221,9 +241,7 @@ with open(ifile_name, 'r') as reader:
                     print("color", memo)
                 else:
                     print("no color", memo)
-                uplist = [item, quantity, memo, price]
-                update_dict(record_dict, update_keys, uplist)
-                print_record(outputWriter, record_dict, record_keys)
+                prt_value(item, quantity, memo, price, record_dict, prt_list)
 
             discount = re.compile(reg_val[11]).search(haye)
             if discount:
@@ -236,25 +254,11 @@ with open(ifile_name, 'r') as reader:
                     tax_val = 0.00
                 else:
                     tax_val = float(sale_tax.group(int(grp_val[3])))
-                if tax_val != 0.00:
-                    uplist = [item_supply, 1, "SALES TAX", '{:.2f}'.format(tax_val)]
-                    update_dict(record_dict, update_keys, uplist)
-                    print_record(outputWriter, record_dict, record_keys)
+                prt_value(item_supply, 1, "SALES TAX", tax_val, record_dict, prt_list)
+                prt_value("Supplies", 1, "DISCOUNT", disc_total,record_dict, prt_list)
+                prt_value("Materials", 1, "PAINTCARE FEE", pca_total,record_dict, prt_list)
+                prt_value("Materials", 1, "SUPPLY CHAIN CHARGE", scc_total,record_dict, prt_list)
 
-                if disc_total != 0:
-                    uplist = ["Supplies", 1, "DISCOUNT", '{:.2f}'.format(disc_total)]
-                    update_dict(record_dict, update_keys, uplist)
-                    print_record(outputWriter, record_dict, record_keys)
-
-                if pca_total != 0:
-                    uplist = ["Materials", 1, "PAINTCARE FEE", '{:.2f}'.format(pca_total)]
-                    update_dict(record_dict, update_keys, uplist)
-                    print_record(outputWriter, record_dict, record_keys)
-
-                if scc_total != 0:
-                    uplist = ["Materials", 1, "SUPPLY CHAIN CHARGE", '{:.2f}'.format(scc_total)]
-                    update_dict(record_dict, update_keys, uplist)
-                    print_record(outputWriter, record_dict, record_keys)
 
                 print("BREAK")
                 break
