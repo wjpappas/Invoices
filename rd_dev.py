@@ -45,6 +45,7 @@ scc_x =  r'(\s*\d+\s+)(SUPPLY CHAIN CHRG)(\s+\d+\s+[-]*[\d]+[.][\d]{2}[\ *]*\s+)
 overhead_x = r'22-000'
 
 def read_vendor(file):
+    """Read vendor file into working lists."""
     list_dt, list_re, list_gp = [], [], []
     with open(file)as read_v:
         for line in range(8):
@@ -59,6 +60,7 @@ def read_vendor(file):
         return (list_dt, list_re, list_gp)
 
 def find_header_x(listx, subject, f_head):
+    """Filter vendor info from header block."""
     coll = []
     head_x = []
     for list in listx:
@@ -71,13 +73,16 @@ def find_header_x(listx, subject, f_head):
     return head_x
 
 def f_eq_val(x):
+    """Filter function."""
     return x
 
 def f_due_date(x):
+    """Filter function."""
     x = bh.datex(x, 10)
     return x
 
 def f_credit(x):
+    """Filter function."""
     clist = ['CHARGE', 'Pasadena', 'Smith']
     if x in clist:
         return 1
@@ -85,6 +90,7 @@ def f_credit(x):
         return -1
 
 def f_side(x):
+    """Filter function."""
     class_east = '525345'
     #class_west = '618620'
     side_list = [class_east, "PASCO", "UNION GAP", "ELLENSBURG", "WENATCHEE", "MOSES LAKE", "YAKIMA", "SPOKANE", "SPOKANE VALLEY", "KENNEWICK", "RICHLAND", "WALLA WALLA", "PULLMAN", "Company"]
@@ -94,6 +100,7 @@ def f_side(x):
         return "Westside"
 
 def f_cust_job(m7):
+    """Filter function."""
     cust_dict = bh.make_dict(cust_file)
     overhead_last = '21-000'
     overhead_now = '22-000'
@@ -113,6 +120,7 @@ def f_cust_job(m7):
     return cust_job.strip()
 
 def read_std_file(val, sfile):
+    """Read to list "Material' product file for Standard."""
     if val == '9':
         std_list = []
         with open(sfile, 'r') as std_read:
@@ -124,6 +132,7 @@ def read_std_file(val, sfile):
         return std_list
 
 def std_item(memo, s_list):
+    """Determine item value for Standard."""
     value = True
     for p_str in s_list:
         if ((memo.lower()).find(p_str) != -1):
@@ -132,6 +141,7 @@ def std_item(memo, s_list):
     return value
 
 def item_ck(item_val, par_01, par_02):
+    """Item checking."""
     if item_val:
         item_supply = par_01
     else:
@@ -139,6 +149,7 @@ def item_ck(item_val, par_01, par_02):
     return item_supply
 
 def credit_ck(ck, term_key, iterms, cterms):
+    """Is credit? for Sherwin."""
     if ck != 1:
         update_dict(record_dict, term_key, cterms)
         return -1
@@ -147,18 +158,22 @@ def credit_ck(ck, term_key, iterms, cterms):
         return 1
 
 def set_dict(rec_keys, rec_val):
+    """Set values for dictionary."""
     return dict(zip(rec_keys, rec_val))
 
 def update_dict(rec_dict, rec_keys, rec_val):
+    """Incrimental udate of output dictionary."""
     up_dict = set_dict(rec_keys, rec_val)
     return rec_dict.update(up_dict)
 
 def print_record(file, record_dict, record_keys):
+    """Write record, duh."""
     out_list = [record_dict[key] for key in record_dict]
     file.writerow(out_list)
-    return #print("hello, print record")
+    return  # print("hello, print record")
 
 def prt_value(item, qty, desc, value, r_dict, p_list):
+    """Load record values and print."""
     if value != 0.00:
         u_list = [item, qty, desc, '{:.2f}'.format(value)]
         update_dict(r_dict, p_list[0], u_list)
