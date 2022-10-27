@@ -1,8 +1,9 @@
 #! usr/bin/python
+import logging
 import re
 import liquidmetal
 
-
+logging.basicConfig(filename='log_filename.txt', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 NumFirstRegex = re.compile(r"(\d\d[-]\d\d\d)")
 AddDashRegex = re.compile(r"(\d\d\d\d\d)")
 stripNumRegex = re.compile(r"(\D*)([\d\d\-\d\d\d])")
@@ -16,8 +17,9 @@ def find_job(value1, jobN_dict):
     m = NumFirstRegex.search(value)
     m2 = stripNumRegex.search(value)
     jobN_list = list(jobN_dict.keys())
-    print(value1, value)
-    print(m, m2, ad)
+#    print(value1, value)
+    logging.debug(str(m))
+#    print(m, m2, ad)
 
     score5 = 0.95
     rxm2 = ""
@@ -27,7 +29,8 @@ def find_job(value1, jobN_dict):
         rxm = jobN_dict.get(m.group(1), 0)
         if (rxm):
             result = rxm
-            print(result)
+#            print(result)
+            logging.debug(str(result))
             return result
     if (m2):
         abb = m2.group(1)
@@ -37,12 +40,14 @@ def find_job(value1, jobN_dict):
             if score0 > score5:
                 score5 = score0
                 rxm2 = job_value
-                print(score5, abb)
+                logging.debug(str(score5, abb))
+#                print(score5, abb)
 
     if (rxm2):
         result = rxm2
     else:
         result = value
 
-    print(result)
+#    print(result)
+    logging.debug(str(result))
     return result

@@ -9,6 +9,7 @@
 #
 #
 #
+import logging
 import re
 import csv
 import sys
@@ -19,6 +20,7 @@ ifile_vendor = sys.argv[1]
 ifile_name = sys.argv[2]
 cust_file = sys.argv[3]
 
+logging.basicConfig(filename='log_filename.txt', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 std_file = 'prod_file.txt'
 outputname_x = r'(\S+).txt'
 outname = ((re.compile(outputname_x)).search(ifile_name)).group(1)+'.csv'
@@ -209,7 +211,7 @@ with open(ifile_name, 'r') as reader:
             db = desc_b.search(haye)
             straye.append(haye)
         head_x = find_header_x(listx, straye, f_head)
-        print("headx =", head_x)
+        logging.debug('headx =' + str(head_x))
 
         update_dict(record_dict, headr_keys, head_x)
 
@@ -253,9 +255,9 @@ with open(ifile_name, 'r') as reader:
                     color_s = (memo, color.group())
                     memo = ";".join(color_s)
                     haye = reader.readline()
-                    print("color", memo)
+                    logging.debug('color' + str(memo))
                 else:
-                    print("no color", memo)
+                    logging.debug('no color' + str(memo))
                 prt_value(item, quantity, memo, price, record_dict, prt_list)
 
             discount = re.compile(reg_val[11]).search(haye)
@@ -275,7 +277,7 @@ with open(ifile_name, 'r') as reader:
                 prt_value("Materials", 1, "SUPPLY CHAIN CHARGE", scc_total,record_dict, prt_list)
 
 
-                print("BREAK")
+                logging.debug('BREAK')
                 break
 
             if haye == haye_last:
@@ -290,8 +292,8 @@ with open(ifile_name, 'r') as reader:
                 break
             rb = rec_b.search(haye)
             if rb:
-                print('parse to header')
+                logging.debug('parse to header')
                 break
-        print(haye)
+        logging.debug(str(haye))
         if not haye:
             break
