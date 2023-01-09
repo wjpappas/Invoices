@@ -19,21 +19,22 @@ input_name = sys.argv[1]              # vendor prefix "inv" | "rod" | "std"
 vend_name = sys.argv[2]               # vendor name "sherwin"|"rodda"|"standard"
 header = 'Vendor,Transaction Date,RefNumber,Bill Due,Terms,Memo,Address Line1,Address Line2,Address Line3,Address Line4,Address City,Address State,Address PostalCode,Address Country,Vendor Acct No,Expenses Account,Expenses Amount,Expenses Memo,Expenses Class,Expenses Customer,Expenses Billable,Items Item,Items Qty,Items Description,Items Cost,Items Class,Items Customer,Items Billable,AP Account\n'
 
-debug_file = f'{input_name}.log'
-logging.basicConfig(filename=f'{input_name}.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-
 dt = datetime.datetime.now()
 
 outname2 = vend_name + dt.strftime('%m%d') + '_ck.csv'
-outname3 = dt.strftime('%m%d') + '_cklog.txt'
+outname3 = dt.strftime('%m%d') + '_cklog.log'
 outname4 = 'allrdy_' + dt.strftime('%m%d') + '.csv'
 
 jobless_record = open(outname2, 'w')
-jobless_log = open(outname3, 'a')
-jobless_log.write('f\n{vend_name} Invoices missing Job#\n')
+
+logging.basicConfig(filename=outname3, level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.debug('Invoices missing Job# %s', vend_name)
+
+invoice_rdy = open(outname4, 'a')
+invoice_rdy.close()
 
 with open(outname4, 'r') as f:
-    line4 = f.line()
+    line4 = f.readline()
 
 if not (CheckHeaderRegex.search(line4)):
     with open(outname4, 'w') as f:
@@ -69,7 +70,7 @@ for x in dirlist:
                     if not (invoiceNum):
                         invoiceNum = see_tree.group(2)
                         jobNum = see_tree.group(4)
-                        jobless_log.write(f'{x}  {invoiceNum}  {jobNum}\n')
+                        logging.debug('%s,  %s, %s ', x, invoiceNum, jobNum)
                     logging.debug('Block 02 %s %s', x, invoiceNum)
                     logging.debug(line)
                 line = tfile.readline()
@@ -81,5 +82,4 @@ for x in dirlist:
             tfile.close()
 
 jobless_record.close()
-jobless_log.close()
 invoice_rdy.close()
