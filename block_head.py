@@ -4,12 +4,14 @@ import re
 from datetime import datetime
 
 
-def make_dict(cust_file):
+def make_dict(cust_file, args):
 
     job_keyRegex = re.compile(r':([\d]{2}[-][\d]{3})')
-
+    oh_key = str(args[0])
+    oh_code = oh_key + ' OH'
     jobN_dict = {}
-    jobN_dict['22-000'] = '22-000 OH'
+    jobN_dict[oh_key] = oh_code
+#    jobN_dict['22-000'] = '22-000 OH'
     with open(cust_file) as f:
         for line in f:
             #            print(line)

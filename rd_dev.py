@@ -13,6 +13,7 @@ import logging
 import re
 import csv
 import sys
+from configparser import ConfigParser
 import job_filter as jf
 import block_head as bh
 
@@ -21,7 +22,7 @@ ifile_name = sys.argv[2]
 cust_file = sys.argv[3]
 
 logging.basicConfig(filename='invoices.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-std_file = 'prod_file.txt'
+std_file = 'Invfile/prod_file.txt'
 outputname_x = r'(\S+).txt'
 outname = ((re.compile(outputname_x)).search(ifile_name)).group(1)+'.csv'
 outputFile = open(outname, 'w')
@@ -44,7 +45,22 @@ term_key = ['terms']
 cash_x = r'(INVOICE)'
 eat_color = r'^\s+ T PAINT.*'
 scc_x =  r'(\s*\d+\s+)(SUPPLY CHAIN CHRG)(\s+\d+\s+[-]*[\d]+[.][\d]{2}[\ *]*\s+)([-]*[\d]+[.][\d]{2})([N]*)'
-overhead_x = r'22-000'
+#overhead_x = r'22-000'
+
+def _get_overhead():
+    """Fetch the overhead job code from your configuration file.
+
+    Expects a configuration file named "invoices.ini" with structure:
+
+        [overhead_code]
+        OH_thisyear=23-000
+        OH_lastyear=22-000
+    """
+    config = ConfigParser()
+    config.read("Invfile/invoices.ini")
+    thisyear = config["overhead_code"]["OH_thisyear"]
+    lastyear = config["overhead_code"]["OH_lastyear"]
+    return (thisyear, lastyear)
 
 def read_vendor(file):
     """Read vendor file into working lists."""
@@ -103,9 +119,10 @@ def f_side(x):
 
 def f_cust_job(m7):
     """Filter function."""
-    cust_dict = bh.make_dict(cust_file)
-    overhead_last = '21-000'
-    overhead_now = '22-000'
+#    cust_dict = bh.make_dict(cust_file)
+#    overhead_last = '21-000'
+#    overhead_now = '22-000'
+    logging.debug("overhead inside cust job (last, now)%s %s", overhead_last, overhead_now)
     check_class = r'Eastside$|Westside$'
 
     low_job = m7.lower()
@@ -181,6 +198,13 @@ def prt_value(item, qty, desc, value, r_dict, p_list):
         update_dict(r_dict, p_list[0], u_list)
         print_record(p_list[1], r_dict, p_list[2])
 
+oh_codes = _get_overhead()
+logging.debug(oh_codes)
+overhead_last = str(oh_codes[1])
+overhead_now = str(oh_codes[0])
+overhead_x = r'%s'%overhead_now
+cust_dict = bh.make_dict(cust_file, oh_codes)
+
 header_dict = set_dict(record_keys, qb_header)
 print_record(outputWriter, header_dict, record_keys)
 prt_list = [update_keys, outputWriter, record_keys]
@@ -244,7 +268,7 @@ with open(ifile_name, 'r') as reader:
                     item_val = std_item(memo, std_list)
                 else:
                     item_val = back_end.group(int(grp_val[1]))
-                item = item_ck(item_val, item_supply, 'Materials')
+                item = item_ck(item_val, 'Materials', item_supply)
                 quantity = back_end.group(int(grp_val[2]))
                 price = float(back_end.group(int(grp_val[4])))*itSign
                 haye = reader.readline()
