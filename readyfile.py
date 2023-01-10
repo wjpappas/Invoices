@@ -28,7 +28,7 @@ outname4 = 'allrdy_' + dt.strftime('%m%d') + '.csv'
 jobless_record = open(outname2, 'w')
 
 logging.basicConfig(filename=outname3, level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-logging.debug('Invoices missing Job# %s', vend_name)
+logging.info('Invoices missing Job# %s', vend_name)
 
 invoice_rdy = open(outname4, 'a')
 invoice_rdy.close()
@@ -48,20 +48,20 @@ dirlocal = os.getcwd()
 dirlist = os.listdir(dirlocal)
 for x in dirlist:
     if (x.startswith(input_name) and x.endswith('.csv')):
-        logging.debug('Line one %s', x)
+#        logging.debug('Line one %s', x)
         tfile = open(x)
         line = tfile.readline()
-        logging.debug('top setup %s', line)
+#        logging.debug('top setup %s', line)
         if (CheckHeaderRegex.search(line)):
             if (pflag):
                 jobless_record.write(line)
                 pflag = 0
-            logging.debug('found header %s', pflag)
+#            logging.debug('found header %s', pflag)
             line = tfile.readline()
             see_tree = CatchNumRegex.search(line)
             invoiceNum = ''
             while True:
-                logging.debug('Lower loop')
+#                logging.debug('Lower loop')
                 if (CheckClassRegex.search(line)):
                     invoice_rdy.write(line)
                     invoiceNum = ''
@@ -70,9 +70,9 @@ for x in dirlist:
                     if not (invoiceNum):
                         invoiceNum = see_tree.group(2)
                         jobNum = see_tree.group(4)
-                        logging.debug('%s,  %s, %s ', x, invoiceNum, jobNum)
-                    logging.debug('Block 02 %s %s', x, invoiceNum)
-                    logging.debug(line)
+                        logging.info('%s,  %s, %s ', x, invoiceNum, jobNum)
+#                    logging.debug('Block 02 %s %s', x, invoiceNum)
+#                    logging.debug(line)
                 line = tfile.readline()
                 if not line:
                     break

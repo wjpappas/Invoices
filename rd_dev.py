@@ -20,7 +20,7 @@ ifile_vendor = sys.argv[1]
 ifile_name = sys.argv[2]
 cust_file = sys.argv[3]
 
-logging.basicConfig(filename='log_filename.txt', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename='invoices.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 std_file = 'prod_file.txt'
 outputname_x = r'(\S+).txt'
 outname = ((re.compile(outputname_x)).search(ifile_name)).group(1)+'.csv'
