@@ -21,8 +21,9 @@ ifile_vendor = sys.argv[1]
 ifile_name = sys.argv[2]
 cust_file = sys.argv[3]
 
-logging.basicConfig(filename='invoices.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-std_file = 'Invfile/prod_file.txt'
+logging.basicConfig(filename='invoices.log', level=logging.DEBUG, format='%(lineno)d - %(funcName)s - %(levelname)s - %(message)s')
+#logging.basicConfig(filename='invoices.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+#std_file = 'Invfile/prod_file.txt'
 outputname_x = r'(\S+).txt'
 outname = ((re.compile(outputname_x)).search(ifile_name)).group(1)+'.csv'
 outputFile = open(outname, 'w')
@@ -60,7 +61,8 @@ def _get_overhead():
     config.read("Invfile/invoices.ini")
     thisyear = config["overhead_code"]["OH_thisyear"]
     lastyear = config["overhead_code"]["OH_lastyear"]
-    return (thisyear, lastyear)
+    std_file = config["file_spec"]["product"]
+    return (thisyear, lastyear, std_file)
 
 def read_vendor(file):
     """Read vendor file into working lists."""
@@ -79,8 +81,7 @@ def read_vendor(file):
 
 def find_header_x(listx, subject, f_head):
     """Filter vendor info from header block."""
-    coll = []
-    head_x = []
+    coll, head_x = [], []
     for list in listx:
         regex = re.compile(list)
         for sub in subject:
@@ -119,10 +120,7 @@ def f_side(x):
 
 def f_cust_job(m7):
     """Filter function."""
-#    cust_dict = bh.make_dict(cust_file)
-#    overhead_last = '21-000'
-#    overhead_now = '22-000'
-    logging.debug("overhead inside cust job (last, now)%s %s", overhead_last, overhead_now)
+#    logging.debug("overhead inside cust job (last, now)%s %s", overhead_last, overhead_now)
     check_class = r'Eastside$|Westside$'
 
     low_job = m7.lower()
@@ -157,6 +155,7 @@ def std_item(memo, s_list):
         if ((memo.lower()).find(p_str) != -1):
             value = False
             break
+    logging.debug('product %s; match: %s', memo, value)
     return value
 
 def item_ck(item_val, par_01, par_02):
@@ -165,6 +164,7 @@ def item_ck(item_val, par_01, par_02):
         item_supply = par_01
     else:
         item_supply = par_02
+        logging.debug('value: %s item supply: %s   %s;  %s', item_val, item_supply,par_01,par_02)
     return item_supply
 
 def credit_ck(ck, term_key, iterms, cterms):
@@ -199,20 +199,23 @@ def prt_value(item, qty, desc, value, r_dict, p_list):
         print_record(p_list[1], r_dict, p_list[2])
 
 oh_codes = _get_overhead()
-logging.debug(oh_codes)
-overhead_last = str(oh_codes[1])
-overhead_now = str(oh_codes[0])
+#overhead_last = str(oh_codes[1])
+#overhead_now = str(oh_codes[0])
+overhead_now, overhead_last, std_file = oh_codes
 overhead_x = r'%s'%overhead_now
-cust_dict = bh.make_dict(cust_file, oh_codes)
-
+logging.debug('OH codes: %s overhead_x: %s', oh_codes, overhead_x)
+cust_dict = bh.make_dict(cust_file, overhead_now)
+print(cust_dict['22-000'])
 header_dict = set_dict(record_keys, qb_header)
 print_record(outputWriter, header_dict, record_keys)
 prt_list = [update_keys, outputWriter, record_keys]
 
-vendor_data = read_vendor(ifile_vendor)
-vendor_val = vendor_data[0]
-reg_val = vendor_data[1]
-grp_val = vendor_data[2]
+vendor_val, reg_val, grp_val = read_vendor(ifile_vendor)
+#vendor_data = read_vendor(ifile_vendor)
+#vendor_val, reg_val, grp_val = vendor_data
+#vendor_val = vendor_data[0]
+#reg_val = vendor_data[1]
+#grp_val = vendor_data[2]
 record_dict = set_dict(record_keys, qb_record)
 update_dict(record_dict, vendor_keys, vendor_val)
 i_terms = vendor_val[1]
@@ -241,9 +244,10 @@ with open(ifile_name, 'r') as reader:
 
         memo_len = 30
         rec_pos = db.start()
-        cust_job = head_x[3]
+        cust_job = head_x[4]
         item_val = re.compile(overhead_x).search(cust_job)
         item_supply = item_ck(item_val, 'Shop Supplies', 'Supplies')
+        logging.debug('DB position: %s; DB: %s', rec_pos, db)
         itSign = credit_ck(head_x[-1], term_key, [i_terms], ['Credit'])
         disc_total = 0
         pca_total = 0
@@ -261,16 +265,17 @@ with open(ifile_name, 'r') as reader:
                 scc_total += float(scc_temp.group(4))
                 haye = reader.readline()
 
-            if re.compile(reg_val[8]).search(haye):
+            if re.compile(reg_val[8]).search(haye):             # sales number
                 memo = (haye[rec_pos:rec_pos+memo_len]).strip()
-                back_end = re.compile(reg_val[9]).search(haye)
+                back_end = re.compile(reg_val[9]).search(haye)  # backend
                 if grp_val[1] == '9':
                     item_val = std_item(memo, std_list)
                 else:
                     item_val = back_end.group(int(grp_val[1]))
                 item = item_ck(item_val, 'Materials', item_supply)
+                logging.debug('item value: %s, item-supply: %s', type(item_val), item_supply)
                 quantity = back_end.group(int(grp_val[2]))
-                price = float(back_end.group(int(grp_val[4])))*itSign
+                price = float((back_end.group(int(grp_val[4]))).replace(",", ""))*itSign
                 haye = reader.readline()
                 if re.compile(eat_color).match(haye):
                     haye = reader.readline()
@@ -279,9 +284,9 @@ with open(ifile_name, 'r') as reader:
                     color_s = (memo, color.group())
                     memo = ";".join(color_s)
                     haye = reader.readline()
-                    logging.debug('color' + str(memo))
+                    logging.debug('color  %s; %s', memo, item)
                 else:
-                    logging.debug('no color' + str(memo))
+                    logging.debug('color  %s; %s', memo, item)
                 prt_value(item, quantity, memo, price, record_dict, prt_list)
 
             discount = re.compile(reg_val[11]).search(haye)

@@ -3,7 +3,7 @@ import logging
 import re
 import liquidmetal
 
-logging.basicConfig(filename='log_filename.txt', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+#logging.basicConfig(filename='log_filename.txt', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 NumFirstRegex = re.compile(r"(\d\d[-]\d\d\d)")
 AddDashRegex = re.compile(r"(\d\d\d\d\d)")
 stripNumRegex = re.compile(r"(\D*)([\d\d\-\d\d\d])")
