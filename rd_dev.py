@@ -60,7 +60,7 @@ def _get_overhead():
     lastyear = config["overhead_code"]["OH_lastyear"]
     std_file = config["file_spec"]["product"]
     return [thisyear, lastyear, std_file]
-
+'''
 def read_vendor(file):
     """Read vendor file into working lists."""
     list_dt, list_re, list_gp = [], [], []
@@ -75,6 +75,16 @@ def read_vendor(file):
             line = read_v.readline()
             list_gp.append(line.strip())
         return (list_dt, list_re, list_gp)
+'''
+def read_vendor(file):
+	"""Read vendor file into working lists."""
+	vend_list = [[], [], []]
+	with open(file)as read_v:
+		r_val = [int(x.rstrip()) for x in read_v.readline().split(',')]
+		for val, bb in zip(r_val, vend_list):
+			for line in range(val):
+				bb.append(read_v.readline().rstrip())
+	return vend_list
 
 def find_header_x(listx, subject, f_head):
     """Filter vendor info from header block."""
@@ -264,6 +274,7 @@ with open(ifile_name, 'r') as reader:
                 logging.debug('item value: %s, nine? %s', item_val, item_grp)
                 if item_grp == '4':
                     item_val = std_item(memo, std_list)
+                    par01, par02 = 'Materials', item_supply
                 else:
                     if item_grp == '3':
                         par01, par02 = item_supply, 'Materials'
