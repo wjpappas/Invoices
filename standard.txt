@@ -1,3 +1,4 @@
+8, 14, 5
 Standard Paint & Flooring, LLC
 NET 10TH
 Standard Paint & Flooring, LLC
@@ -18,10 +19,10 @@ TERMS:\s(\w*.*),\w*.*$
 ([\d]+)\s+\S{2,3}\s+([-]*[,\d]*[.][\d]{2})\s+\S{2,4}\s+([-]*[,\d]*[.][\d]{2})*\s*([*RONS]*)$
 RP-.*$|  TINT\s+.*$|\d{4}-\d{2}\s+.*$|[\w]+.*$
 (DISCOUNT).*([-][\d]+[.][\d]{2})
-^.*(Sales Tax\s*([\d]{1,2}.[\d]{1,2}[%])*\s+[$])([\d]*[.][\d]{2})
+^.*(Sales Tax\s*([\d]{1,2}.[\d]{1,2}[%%])*\s+[$])([\d]*[.][\d]{2})
 (\s*PAINT[ ]*CARE\s.*)\s+([\d]*[.][\d]{2})
 2
-9
+4
 1
 3
 2

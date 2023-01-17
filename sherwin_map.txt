@@ -1,3 +1,4 @@
+vendor, RegexValue, group_value
 name
 terms
 vmemo

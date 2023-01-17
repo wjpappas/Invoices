@@ -1,6 +1,7 @@
 #! /usr/bin/python3
 
 import re
+import csv
 from datetime import datetime
 
 job_keyRegex = re.compile(r':([\d]{2}[-][\d]{3})')
@@ -10,10 +11,10 @@ def make_dict(cust_file, oh_key):
     jobN_dict = {}
     jobN_dict[oh_key] = oh_key + ' OH'
 
-    with open(cust_file) as f:
-        for line in f:
-            line = line.rstrip()
-            (cust_job, jclass) = line.split(',,')
+    with open(cust_file) as csvf:
+        cfr = csv.reader(csvf)
+        for line in cfr:
+            (cust_job, jclass) = line
 
             cust_job = cust_job.strip('"')
 #            print(cust_job, jclass)
