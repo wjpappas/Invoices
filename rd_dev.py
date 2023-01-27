@@ -60,31 +60,16 @@ def _get_overhead():
     lastyear = config["overhead_code"]["OH_lastyear"]
     std_file = config["file_spec"]["product"]
     return [thisyear, lastyear, std_file]
-'''
+
 def read_vendor(file):
     """Read vendor file into working lists."""
-    list_dt, list_re, list_gp = [], [], []
+    vend_list = [[], [], []]
     with open(file)as read_v:
-        for line in range(8):
-            line = read_v.readline()
-            list_dt.append(line.strip())
-        for line in range(14):
-            line = read_v.readline()
-            list_re.append(line.strip())
-        for line in range(5):
-            line = read_v.readline()
-            list_gp.append(line.strip())
-        return (list_dt, list_re, list_gp)
-'''
-def read_vendor(file):
-	"""Read vendor file into working lists."""
-	vend_list = [[], [], []]
-	with open(file)as read_v:
-		r_val = [int(x.rstrip()) for x in read_v.readline().split(',')]
-		for val, bb in zip(r_val, vend_list):
-			for line in range(val):
-				bb.append(read_v.readline().rstrip())
-	return vend_list
+        r_val = [int(x.rstrip()) for x in read_v.readline().split(',')]
+        for val, bb in zip(r_val, vend_list):
+            for line in range(val):
+                bb.append(read_v.readline().rstrip())
+    return vend_list
 
 def find_header_x(listx, subject, f_head):
     """Filter vendor info from header block."""
@@ -215,9 +200,9 @@ prt_list = [update_keys, outputWriter, record_keys]
 
 vendor_val, reg_val, grp_val = read_vendor(ifile_vendor)
 salenum_rgx, backend_rgx, color_rgx, disc_rgx, tax_rgx, pca_rgx = reg_val[8:]
-print(reg_val[8:13])
+#print(reg_val[8:13])
 pca_grp, item_grp, qty_grp, tax_grp, price_grp = grp_val
-print(grp_val)
+#print(grp_val)
 record_dict = set_dict(record_keys, qb_record)
 update_dict(record_dict, vendor_keys, vendor_val)
 i_terms = vendor_val[1]

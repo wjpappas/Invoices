@@ -77,8 +77,8 @@ for x in dirlist:
                 if not line:
                     break
                 see_tree = CatchNumRegex.search(line)
-                logging.debug('%s', line)
-                logging.debug('Invoice#: %s see_tree: %s', invoiceNum, see_tree.group(2))
+#                logging.debug('%s', line)
+#                logging.debug('Invoice#: %s see_tree: %s', invoiceNum, see_tree.group(2))
                 if not (invoiceNum == see_tree.group(2)):
                     invoiceNum = ''
             tfile.close()
