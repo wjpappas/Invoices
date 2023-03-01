@@ -1,5 +1,6 @@
 import re
 from job_filter import find_job
+from block_head import datex
 
 def f_side(x):
     """Filter function."""
@@ -38,3 +39,32 @@ def item_ck(item_val, par_01, par_02):
         item_supply = par_02
 #        logging.debug('value: %s item supply: %s   %s;  %s', item_val, item_supply, par_01, par_02)
     return item_supply
+
+def find_header_x(listx, subject, f_head):
+    """Filter vendor info from header block."""
+    coll, head_x = [], []
+    for list in listx:
+        regex = re.compile(list)
+        for sub in subject:
+            if regex.search(sub):
+                coll.append((regex.search(sub)).group(1))
+    for num, fun in zip(coll, f_head):
+        head_x.append(fun(num))
+    return head_x
+
+def f_eq_val(x):
+    """Filter function."""
+    return x
+
+def f_due_date(x):
+    """Filter function."""
+    x = datex(x, 10)
+    return x
+
+def f_credit(x):
+    """Filter function."""
+    clist = ['CHARGE', 'Pasadena', 'Smith']
+    if x in clist:
+        return 1
+    else:
+        return -1

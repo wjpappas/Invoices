@@ -5,44 +5,52 @@ import sys
 import re
 import datetime
 import logging
+from qb_head import header
+from block_head import _get_overhead
 
 """     Run for each vendor to consolidate QB input file
 
 Successively addin complete records to "allrdy_mmdd.csv" while checking for jobless records. These records are stored in "vendor name_ch.csv" and notes are stored in "mmdd_cklog.txt"
 """
+oh_codes = _get_overhead()
+overhead_now, overhead_last, std_file = oh_codes
+combi = overhead_now + '|' + overhead_last
+overhead_rgx = r'.*(Eastside|Westside).*(:\d\d-\d\d\d|%s)'%combi
+
+def new_header(outname, head, rgx):
+    f = open(outname, 'a')
+    f.close()
+    with open(outname, 'r') as f:
+        line = f.readline()
+    if not (rgx.search(line)):
+        with open(outname, 'w') as f:
+            f.write(head)
 
 CatchNumRegex = re.compile(r'^([\"]*\w+[-,& \w+\.\"]*,\d{1,2}/\d{1,2}/\d{4}),(\w+[/-]*\w),.*,(Eastside|Westside),(.*),\w,')
-CheckClassRegex = re.compile(r'.*(Eastside|Westside).*(:\d\d-\d\d\d|21-000|22-000)')
+CheckClassRegex = re.compile(overhead_rgx)
 CheckHeaderRegex = re.compile(r'Vendor,Transaction Date,Ref')
+CheckCreditRegex = re.compile(r'.*,\d{1,2}/\d{1,2}/\d{4},Credit,.*')
 
 input_name = sys.argv[1]              # vendor prefix "inv" | "rod" | "std"
 vend_name = sys.argv[2]               # vendor name "sherwin"|"rodda"|"standard"
-header = 'Vendor,Transaction Date,RefNumber,Bill Due,Terms,Memo,Address Line1,Address Line2,Address Line3,Address Line4,Address City,Address State,Address PostalCode,Address Country,Vendor Acct No,Expenses Account,Expenses Amount,Expenses Memo,Expenses Class,Expenses Customer,Expenses Billable,Items Item,Items Qty,Items Description,Items Cost,Items Class,Items Customer,Items Billable,AP Account\n'
 
 dt = datetime.datetime.now()
 
 outname2 = vend_name + dt.strftime('%m%d') + '_ck.csv'
-outname3 = dt.strftime('%m%d') + '_cklog.log'
-outname4 = 'allrdy_' + dt.strftime('%m%d') + '.csv'
-
 jobless_record = open(outname2, 'w')
+jobless_record.write(header)
 
+outname3 = dt.strftime('%m%d') + '_cklog.log'
 logging.basicConfig(filename=outname3, level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logging.info('Invoices missing Job# %s', vend_name)
 
-invoice_rdy = open(outname4, 'a')
-invoice_rdy.close()
-
-with open(outname4, 'r') as f:
-    line4 = f.readline()
-
-if not (CheckHeaderRegex.search(line4)):
-    with open(outname4, 'w') as f:
-        f.write(header)
-
+outname4 = 'allrdy_' + dt.strftime('%m%d') + '.csv'
+new_header(outname4, header, CheckHeaderRegex)
 invoice_rdy = open(outname4, 'a')
 
-pflag = 1
+outname5 = 'credit_' + dt.strftime('%m%d') + '.csv'
+new_header(outname5, header, CheckHeaderRegex)
+credit_rdy = open(outname5, 'a')
 
 dirlocal = os.getcwd()
 dirlist = os.listdir(dirlocal)
@@ -53,16 +61,17 @@ for x in dirlist:
         line = tfile.readline()
 #        logging.debug('top setup %s', line)
         if (CheckHeaderRegex.search(line)):
-            if (pflag):
-                jobless_record.write(line)
-                pflag = 0
-#            logging.debug('found header %s', pflag)
             line = tfile.readline()
+#            logging.debug('under setup %s', line)
             see_tree = CatchNumRegex.search(line)
             invoiceNum = ''
+#            logging.debug('Invoice#: %s see_tree: %s', invoiceNum, see_tree)
             while True:
 #                logging.debug('Lower loop')
-                if (CheckClassRegex.search(line)):
+                if (CheckCreditRegex.search(line)):
+                    credit_rdy.write(line)
+                    invoiceNum = ''
+                elif (CheckClassRegex.search(line)):
                     invoice_rdy.write(line)
                     invoiceNum = ''
                 else:
@@ -85,3 +94,4 @@ for x in dirlist:
 
 jobless_record.close()
 invoice_rdy.close()
+credit_rdy.close()
