@@ -1,13 +1,13 @@
 8, 14, 5
 Rodda Paint Co.
 NET 30
-Rodda Paint Co.
+
 P.O. Box 24425
 Pasadena
 CA
 91185-4425
 10
-(ITEM DESCRIPTION\s+)QUANTITY
+(\s{5}ITEM DESCRIPTION\s+)QUANTITY
 (.*REMIT TO:)
 .*INVOICE DATE\s+:\s*(\S+\d{4})
 TERMS:\s(\w*.*),\w*.*$

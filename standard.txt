@@ -1,13 +1,13 @@
 8, 14, 5
 Standard Paint & Flooring, LLC
 NET 10TH
-Standard Paint & Flooring, LLC
+
 130 S 72nd Ave
 Yakima
 WA
 '98908
 10
-^\s*(Line\s*Description)\w*
+^\s*Line\s*(Description)\w*
 .*Sales Invoice.*
 ^.*Invoice Date\s*(\d{1,2}/\d{1,2}/\d{4})$
 TERMS:\s(\w*.*),\w*.*$
