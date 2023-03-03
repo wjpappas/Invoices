@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 import logging
 import re
 import csv
@@ -90,9 +92,10 @@ with open(ifile_name, 'r') as reader:
                 logging.debug('parse to header')
                 break
             straye.append(haye)
-        if db:            
+        if db:
             head_x = find_header_x(listx, straye, f_head)   # invoice header
-            cust_job = f_cust_job(head_x[4], overhead_now, overhead_last, cust_dict)
+            cust_job = head_x[4]
+            head_x[4] = f_cust_job(cust_job, overhead_now, overhead_last, cust_dict)
             itSign = credit_ck(head_x[-1], term_key, [i_terms], ['Credit'])
             logging.debug('headx =' + str(head_x))
 

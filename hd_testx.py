@@ -8,7 +8,7 @@ from datetime import datetime
 import pandas as pd
 from block_head import make_dict, read_vendor, set_dict, update_dict, print_record, prt_value, _get_overhead
 from qb_func import f_side, f_cust_job, item_ck
-from qbhead import qb_record, qb_header
+from qb_head import qb_record, qb_header
 from output_temp import record_keys, vendor_keys, update_keys, headr_keys
 
 logging.basicConfig(filename='invoices.log', level=logging.DEBUG, format='%(lineno)d - %(funcName)s - %(levelname)s - %(message)s')
@@ -28,8 +28,11 @@ outputnameRegex = re.compile(r'(\S+).csv')
 sep = ';'
 unit_max = 50.00
 
+logging.debug('argv[0]: %s ', sys.argv[0])
 ifile_vendor = sys.argv[1]
+logging.debug('argv[1]: %s ', ifile_vendor)
 ifile_name = sys.argv[2]
+logging.debug('argv[1]: %s argv[2]: %s ', ifile_vendor, ifile_name)
 cust_file = sys.argv[3]
 
 oh_codes = _get_overhead()
@@ -96,7 +99,7 @@ while browlsx != 'x':
         memo = desc_str
         price = float(cost.lstrip('$'))
 
-        head_x = [idate, inv_num, date_due, side, cust_job]
+        head_x = [date_form(idate), inv_num, date_form(date_due), side, cust_job]
         update_dict(record_dict, headr_keys, head_x)
         prt_list = [update_keys, outputInvoice, record_keys]
         prt_value(item, quantity, memo, price, record_dict, prt_list)

@@ -1,22 +1,21 @@
-#!/usr/bin/python
+#! /usr/bin/python3
 
 import os
 import sys
 import re
 import datetime
 import logging
-from qb_head import header
 from block_head import _get_overhead
+from qb_head import header
 
-"""     Run for each vendor to consolidate QB input file
+'''
+ Run for each vendor to consolidate QB input files
 
-Successively addin complete records to "allrdy_mmdd.csv" while checking for jobless records. These records are stored in "vendor name_ch.csv" and notes are stored in "mmdd_cklog.txt"
-"""
-oh_codes = _get_overhead()
-overhead_now, overhead_last, std_file = oh_codes
-combi = overhead_now + '|' + overhead_last
-overhead_rgx = r'.*(Eastside|Westside).*(:\d\d-\d\d\d|%s)'%combi
+ Successively addin complete records to "allrdy_mmdd.csv" and "credit_mmdd.csv
+ while checking for jobless records. These records are stored in
+ "vendor name_ck.csv" and notes are stored in "mmdd_cklog.txt"
 
+'''
 def new_header(outname, head, rgx):
     f = open(outname, 'a')
     f.close()
@@ -25,6 +24,11 @@ def new_header(outname, head, rgx):
     if not (rgx.search(line)):
         with open(outname, 'w') as f:
             f.write(head)
+
+oh_codes = _get_overhead()
+overhead_now, overhead_last, std_file = oh_codes
+combi = overhead_now + '|' + overhead_last
+overhead_rgx = r'.*(Eastside|Westside).*(:\d\d-\d\d\d|%s)'%combi
 
 CatchNumRegex = re.compile(r'^([\"]*\w+[-,& \w+\.\"]*,\d{1,2}/\d{1,2}/\d{4}),(\w+[/-]*\w),.*,(Eastside|Westside),(.*),\w,')
 CheckClassRegex = re.compile(overhead_rgx)

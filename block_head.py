@@ -15,8 +15,8 @@ def _get_overhead():
         OH_lastyear=22-000
     """
     config = ConfigParser()
-    # config.read("Invfile/invoices.ini")
-    config.read("invoices.ini")
+    config.read("Invfile/invoices.ini")
+    # config.read("invoices.ini")
     thisyear = config["overhead_code"]["OH_thisyear"]
     lastyear = config["overhead_code"]["OH_lastyear"]
     std_file = config["file_spec"]["product"]
