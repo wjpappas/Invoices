@@ -93,6 +93,7 @@ with open(ifile_name, 'r') as reader:
                 break
             straye.append(haye)
         if db:
+            logging.debug('straye =' + str(straye))
             head_x = find_header_x(listx, straye, f_head)   # invoice header
             cust_job = head_x[4]
             head_x[4] = f_cust_job(cust_job, overhead_now, overhead_last, cust_dict)
@@ -115,7 +116,7 @@ with open(ifile_name, 'r') as reader:
                 break
             pca_temp = re.compile(pca_rgx).search(haye)
             if pca_temp:
-                pca_total += float(pca_temp.group(int(pca_grp)))
+                pca_total += float(pca_temp.group(int(pca_grp)))*itSign
                 haye = reader.readline()
 
             scc_temp = re.compile(scc_x).search(haye)
@@ -163,7 +164,7 @@ with open(ifile_name, 'r') as reader:
                 if not sale_tax.group(int(tax_grp)):
                     tax_val = 0.00
                 else:
-                    tax_val = float(sale_tax.group(int(tax_grp)))
+                    tax_val = float(sale_tax.group(int(tax_grp)))*itSign
                 prt_value(item_supply, 1, "SALES TAX", tax_val, record_dict, prt_list)
                 prt_value("Supplies", 1, "DISCOUNT", disc_total,record_dict, prt_list)
                 prt_value("Materials", 1, "PAINTCARE FEE", pca_total,record_dict, prt_list)

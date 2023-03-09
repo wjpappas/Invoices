@@ -63,7 +63,7 @@ def f_due_date(x):
 
 def f_credit(x):
     """Filter function."""
-    clist = ['CHARGE', 'Pasadena', 'Smith']
+    clist = ['INVOICE', 'Pasadena', 'West Yakima']
     if x in clist:
         return 1
     else:
