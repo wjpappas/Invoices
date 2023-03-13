@@ -40,20 +40,7 @@ def item_ck(item_val, par_01, par_02):
         item_supply = par_02
 #        logging.debug('value: %s item supply: %s   %s;  %s', item_val, item_supply, par_01, par_02)
     return item_supply
-'''
-def find_header_x(listx, subject, f_head):
-    """Filter vendor info from header block."""
-    coll, head_x = [], []
-    for list in listx:
-        regex = re.compile(list)
-        for sub in subject:
-            if regex.search(sub):
-                coll.append((regex.search(sub)).group(1))
-                logging.debug('list value: %s match: %s ', list, (regex.search(sub)).group(1))
-    for num, fun in zip(coll, f_head):
-        head_x.append(fun(num))
-    return head_x
-'''
+
 def find_header_x(listx, subject, f_head):
     """Filter vendor info from header block."""
     coll, head_x = [], []
