@@ -1,4 +1,5 @@
 import re
+import logging
 from job_filter import find_job
 from block_head import datex
 
@@ -48,6 +49,7 @@ def find_header_x(listx, subject, f_head):
         for sub in subject:
             if regex.search(sub):
                 coll.append((regex.search(sub)).group(1))
+                logging.debug('list value: %s match: %s ', list, (regex.search(sub)).group(1))
     for num, fun in zip(coll, f_head):
         head_x.append(fun(num))
     return head_x
@@ -63,7 +65,7 @@ def f_due_date(x):
 
 def f_credit(x):
     """Filter function."""
-    clist = ['INVOICE', 'Pasadena', 'West Yakima']
+    clist = ['INVOICE', 'Pasadena', 'Fax: 509-453']
     if x in clist:
         return 1
     else:
