@@ -4,7 +4,7 @@ import logging
 import re
 import csv
 import sys
-from block_head import make_dict, read_vendor, set_dict, update_dict, print_record, prt_value, _get_overhead
+from block_head import make_dict, read_vendor, set_dict, update_dict, print_record, prt_value, _get_overhead, listFile
 from qb_func import f_side, f_cust_job, item_ck, find_header_x, f_eq_val, f_due_date, f_credit
 from qb_head import qb_record, qb_header                 # Output list templates
 # Keys mapping update and output lists
@@ -19,8 +19,6 @@ outputname_x = r'(\S+).txt'
 outname = ((re.compile(outputname_x)).search(ifile_name)).group(1)+'.csv'
 outputFile = open(outname, 'w', newline='', encoding='utf-8')
 outputWriter = csv.writer(outputFile)
-
-term_key = ['terms']
 
 cash_x = r'(INVOICE)'
 eat_color = r'^\s+ T PAINT.*'
@@ -56,6 +54,9 @@ def credit_ck(ck, term_key, iterms, cterms):
         update_dict(record_dict, term_key, iterms)
         return 1
 
+#input_list = 'output_temp.csv'
+#johnny = listFile(input_list)
+#qb_header, qb_record, record_keys, vendor_keys, update_keys, headr_keys, term_key = [x for x in listFile(input_list)]
 oh_codes = _get_overhead()
 overhead_now, overhead_last, std_file = oh_codes
 overhead_x = r'%s'%overhead_now

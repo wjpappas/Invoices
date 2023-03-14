@@ -99,3 +99,10 @@ def prt_value(item, qty, desc, value, r_dict, p_list):
         u_list = [item, qty, desc, '{:.2f}'.format(value)]
         update_dict(r_dict, p_list[0], u_list)
         print_record(p_list[1], r_dict, p_list[2])
+
+def listFile(infile):
+    """Read file into list."""
+    with open(infile) as in_file:
+        file_read = csv.reader(in_file, quotechar="'")
+        array = list(file_read)
+    return array

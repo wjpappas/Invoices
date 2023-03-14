@@ -1,0 +1,7 @@
+Vendor,Transaction Date,RefNumber,Bill Due,Terms,Memo,Address Line1,Address Line2, Address Line3,Address Line4,Address City,Address State,Address PostalCode,Address Country,Vendor Acct No,Expenses Account,Expenses Amount,Expenses Memo,Expenses Class,Expenses Customer,Expenses Billable,Items Item,Items Qty,Items Description,Items Cost,Items Class,Items Customer,Items Billable,AP Account
+'','','','','','','','','','','','','','','','','','','','','','','','','','','','Y',' '
+name,trans_date,ref_num,bill_due,terms,memo,add_line1,add_line2,add_line3,add_line4,add_city,add_state,postal_code,country,acct_no,exp_acct,exp_amt,exp_memo,exp_class,exp_cust,exp_bill,i_items,i_qty,i_desc,i_cost,i-class,i_cust,i_bill,ap_acct
+name,terms,memo,add_line1,add_city,add_state,postal_code
+i_items,i_qty,i_desc,i_cost
+trans_date,ref_num,bill_due,i-class,i_cust
+terms

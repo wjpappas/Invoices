@@ -3,6 +3,7 @@
 import os
 import sys
 import re
+import csv
 import datetime
 import logging
 from block_head import _get_overhead
@@ -39,6 +40,8 @@ input_name = sys.argv[1]              # vendor prefix "inv" | "rod" | "std"
 vend_name = sys.argv[2]               # vendor name "sherwin"|"rodda"|"standard"
 
 dt = datetime.datetime.now()
+#with open('output_temp.csv') as file_obj:
+#    header = next(file_obj)
 
 outname2 = vend_name + dt.strftime('%m%d') + '_ck.csv'
 jobless_record = open(outname2, 'w')
