@@ -6,7 +6,7 @@ import sys
 import logging
 from datetime import datetime
 import pandas as pd
-from block_head import make_dict, read_vendor, set_dict, update_dict, print_record, prt_value, _get_overhead
+from block_head import make_dict, read_vendor, set_dict, update_dict, print_record, prt_value, _get_overhead, listFile
 from qb_func import f_side, f_cust_job, item_ck
 from qb_head import qb_record, qb_header
 from output_temp import record_keys, vendor_keys, update_keys, headr_keys
@@ -27,6 +27,9 @@ outputnameRegex = re.compile(r'(\S+).csv')
 
 sep = ';'
 unit_max = 50.00
+
+#input_list = 'output_temp.csv'
+#qb_header, qb_record, record_keys, vendor_keys, update_keys, headr_keys, term_key = [x for x in listFile(input_list)]
 
 logging.debug('argv[0]: %s ', sys.argv[0])
 ifile_vendor = sys.argv[1]
