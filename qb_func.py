@@ -81,8 +81,8 @@ def std_item(memo, s_list):
     logging.debug('product %s; T/F: %s %s', memo, value, type(p_str))
     return value
 
-def item_par(item_grp, memo, back_end, item_val, std_list):
-    item_supply = item_ck(item_val, 'Shop Supplies', 'Supplies')
+def item_par(item_grp, memo, back_end, item_supply, std_list):
+#    item_supply = item_ck(item_val, 'Shop Supplies', 'Supplies')
     if item_grp == '4':
         item = item_ck(std_item(memo, std_list), 'Materials', item_supply)
     if item_grp == '3':

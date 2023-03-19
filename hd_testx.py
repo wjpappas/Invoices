@@ -8,8 +8,6 @@ from datetime import datetime
 import pandas as pd
 from block_head import make_dict, read_vendor, set_dict, update_dict, print_record, prt_value, _get_overhead, listFile
 from qb_func import f_side, f_cust_job, item_ck
-from qb_head import qb_record, qb_header
-from output_temp import record_keys, vendor_keys, update_keys, headr_keys
 
 logging.basicConfig(filename='invoices.log', level=logging.DEBUG, format='%(lineno)d - %(funcName)s - %(levelname)s - %(message)s')
 
@@ -28,9 +26,6 @@ outputnameRegex = re.compile(r'(\S+).csv')
 sep = ';'
 unit_max = 50.00
 
-#input_list = 'output_temp.csv'
-#qb_header, qb_record, record_keys, vendor_keys, update_keys, headr_keys, term_key = [x for x in listFile(input_list)]
-
 logging.debug('argv[0]: %s ', sys.argv[0])
 ifile_vendor = sys.argv[1]
 logging.debug('argv[1]: %s ', ifile_vendor)
@@ -39,8 +34,9 @@ logging.debug('argv[1]: %s argv[2]: %s ', ifile_vendor, ifile_name)
 cust_file = sys.argv[3]
 
 oh_codes = _get_overhead()
-overhead_now, overhead_last, std_file = oh_codes
+overhead_now, overhead_last, std_file, input_list = oh_codes
 overhead_x = r'%s'%overhead_now
+qb_header, qb_record, record_keys, vendor_keys, update_keys, headr_keys, term_key = [x for x in listFile(input_list)]
 cust_dict = make_dict(cust_file, overhead_now)
 
 opf = outputnameRegex.search(ifile_name)
@@ -97,7 +93,6 @@ while browlsx != 'x':
         side = f_side(location)
         item_val = re.compile(overhead_x).search(cust_job)
         item = item_ck(item_val, 'Shop Supplies', 'Supplies')
-#        item = item_ck(item_val, par_01, par_02)
         quantity = '1'
         memo = desc_str
         price = float(cost.lstrip('$'))

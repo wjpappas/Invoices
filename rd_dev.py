@@ -5,7 +5,7 @@ import re
 import csv
 import sys
 from block_head import make_dict, read_vendor, set_dict, update_dict, print_record, prt_value, _get_overhead, listFile
-from qb_func import f_side, f_cust_job, item_ck, find_header_x, f_eq_val, f_due_date, f_credit
+from qb_func import f_side, f_cust_job, item_ck, find_header_x, f_eq_val, f_due_date, f_credit, item_par
 
 ifile_vendor = sys.argv[1]
 ifile_name = sys.argv[2]
@@ -125,18 +125,8 @@ with open(ifile_name, 'r') as reader:
             back_end = re.compile(backend_rgx).search(haye)  # backend
             if front_end and back_end:                       # complete line
                 memo = (haye[rec_pos:rec_pos+memo_len]).strip()
-                logging.debug('item value: %s, four-three-seven? %s', item_val, item_grp)
-                if item_grp == '4':
-                    item_val = std_item(memo, std_list)
-                    par01, par02 = 'Materials', item_supply
-                else:
-                    if item_grp == '3':
-                        par01, par02 = item_supply, 'Materials'
-                    if item_grp == '7':
-                        par01, par02 = 'Materials', item_supply
-                    item_val = back_end.group(int(item_grp))
-                item = item_ck(item_val, par01, par02)
-                logging.debug('item value: %s, item-supply: %s', item_val, item_supply)
+                logging.debug('item value: %s, four-three-seven? %s, ItemS: %s', item_val, item_grp, item_supply)
+                item = item_par(item_grp, memo, back_end, item_supply, std_list)
                 quantity = back_end.group(int(qty_grp))
                 price = float((back_end.group(int(price_grp))).replace(",", ""))*itSign
                 haye = reader.readline()
@@ -164,7 +154,7 @@ with open(ifile_name, 'r') as reader:
                 else:
                     tax_val = float(sale_tax.group(int(tax_grp)))*itSign
                 prt_value(item_supply, 1, "SALES TAX", tax_val, record_dict, prt_list)
-                prt_value("Supplies", 1, "DISCOUNT", disc_total,record_dict, prt_list)
+                prt_value(item_supply, 1, "DISCOUNT", disc_total,record_dict, prt_list)
                 prt_value("Materials", 1, "PAINTCARE FEE", pca_total,record_dict, prt_list)
                 prt_value("Materials", 1, "SUPPLY CHAIN CHARGE", scc_total,record_dict, prt_list)
 
