@@ -20,7 +20,8 @@ def _get_overhead():
     thisyear = config["overhead_code"]["OH_thisyear"]
     lastyear = config["overhead_code"]["OH_lastyear"]
     std_file = config["file_spec"]["product"]
-    return [thisyear, lastyear, std_file]
+    out_file = config["file_spec"]["header"]
+    return [thisyear, lastyear, std_file, out_file]
 
 job_keyRegex = re.compile(r':([\d]{2}[-][\d]{3})')
 

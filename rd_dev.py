@@ -6,9 +6,6 @@ import csv
 import sys
 from block_head import make_dict, read_vendor, set_dict, update_dict, print_record, prt_value, _get_overhead, listFile
 from qb_func import f_side, f_cust_job, item_ck, find_header_x, f_eq_val, f_due_date, f_credit
-from qb_head import qb_record, qb_header                 # Output list templates
-# Keys mapping update and output lists
-from output_temp import record_keys, vendor_keys, update_keys, headr_keys
 
 ifile_vendor = sys.argv[1]
 ifile_name = sys.argv[2]
@@ -20,6 +17,7 @@ outname = ((re.compile(outputname_x)).search(ifile_name)).group(1)+'.csv'
 outputFile = open(outname, 'w', newline='', encoding='utf-8')
 outputWriter = csv.writer(outputFile)
 
+#term_key = ['terms']
 cash_x = r'(INVOICE)'
 eat_color = r'^\s+ T PAINT.*'
 scc_x =  r'(\s*\d+\s+)(SUPPLY CHAIN CHRG)(\s+\d+\s+[-]*[\d]+[.][\d]{2}[\ *]*\s+)([-]*[\d]+[.][\d]{2})([N]*)'
@@ -54,14 +52,12 @@ def credit_ck(ck, term_key, iterms, cterms):
         update_dict(record_dict, term_key, iterms)
         return 1
 
-#input_list = 'output_temp.csv'
-#johnny = listFile(input_list)
-#qb_header, qb_record, record_keys, vendor_keys, update_keys, headr_keys, term_key = [x for x in listFile(input_list)]
 oh_codes = _get_overhead()
-overhead_now, overhead_last, std_file = oh_codes
+overhead_now, overhead_last, std_file, input_list = oh_codes
 overhead_x = r'%s'%overhead_now
 logging.debug('OH codes: %s overhead_x: %s', oh_codes, overhead_x)
 cust_dict = make_dict(cust_file, overhead_now)
+qb_header, qb_record, record_keys, vendor_keys, update_keys, headr_keys, term_key = [x for x in listFile(input_list)]
 header_dict = set_dict(record_keys, qb_header)
 print_record(outputWriter, header_dict, record_keys)
 prt_list = [update_keys, outputWriter, record_keys]
@@ -125,9 +121,10 @@ with open(ifile_name, 'r') as reader:
                 scc_total += float(scc_temp.group(4))
                 haye = reader.readline()
 
-            if re.compile(salenum_rgx).search(haye):             # sales number
+            front_end = re.compile(salenum_rgx).search(haye) # sales number
+            back_end = re.compile(backend_rgx).search(haye)  # backend
+            if front_end and back_end:                       # complete line
                 memo = (haye[rec_pos:rec_pos+memo_len]).strip()
-                back_end = re.compile(backend_rgx).search(haye)  # backend
                 logging.debug('item value: %s, four-three-seven? %s', item_val, item_grp)
                 if item_grp == '4':
                     item_val = std_item(memo, std_list)

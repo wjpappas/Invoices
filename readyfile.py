@@ -27,7 +27,7 @@ def new_header(outname, head, rgx):
             f.write(head)
 
 oh_codes = _get_overhead()
-overhead_now, overhead_last, std_file = oh_codes
+overhead_now, overhead_last, std_file, input_list = oh_codes
 combi = overhead_now + '|' + overhead_last
 overhead_rgx = r'.*(Eastside|Westside).*(:\d\d-\d\d\d|%s)'%combi
 

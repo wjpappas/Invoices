@@ -71,3 +71,22 @@ def f_credit(x):
         return 1
     else:
         return -1
+
+def std_item(memo, s_list):
+    """Determine item value for Standard."""
+    value = False
+    for p_str in s_list:
+        if (memo.lower()).find(p_str) != -1:
+            value = True
+    logging.debug('product %s; T/F: %s %s', memo, value, type(p_str))
+    return value
+
+def item_par(item_grp, memo, back_end, item_val, std_list):
+    item_supply = item_ck(item_val, 'Shop Supplies', 'Supplies')
+    if item_grp == '4':
+        item = item_ck(std_item(memo, std_list), 'Materials', item_supply)
+    if item_grp == '3':
+        item = item_ck(back_end.group(int(item_grp)), item_supply, 'Materials')
+    if item_grp == '7':
+        item = item_ck(back_end.group(int(item_grp)), 'Materials', item_supply)
+    return item
