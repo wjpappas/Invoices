@@ -34,15 +34,6 @@ def read_std_file(val, sfile):
                 std_list.append(line.rstrip())
         return std_list
 
-def std_item(memo, s_list):
-    """Determine item value for Standard."""
-    value = False
-    for p_str in s_list:
-        if (memo.lower()).find(p_str) != -1:
-            value = True
-    logging.debug('product %s; T/F: %s %s', memo, value, type(p_str))
-    return value
-
 def credit_ck(ck, term_key, iterms, cterms):
     """Is credit? for Sherwin."""
     if ck != 1:
