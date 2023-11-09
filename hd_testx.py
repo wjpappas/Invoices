@@ -9,6 +9,8 @@ import pandas as pd
 from block_head import make_dict, read_vendor, set_dict, update_dict, print_record, prt_value, _get_overhead, listFile
 from qb_func import f_side, f_cust_job, item_ck
 
+HEADER_COLS = ['Invoice Date', 'Store Number and Name', 'Invoice Number', 'Invoice Due Date', 'PO# / Job Name', 'SKU Description', 'Quantity', 'Original Unit Price', 'Invoice Total']
+
 logging.basicConfig(filename='invoices.log', level=logging.DEBUG, format='%(lineno)d - %(funcName)s - %(levelname)s - %(message)s')
 
 def date_form(xdate):
@@ -22,6 +24,7 @@ def tool_text(row, unit_max, fileid):
         outputTools.writerow(row)
 
 outputnameRegex = re.compile(r'(\S+).csv')
+locationRegex = re.compile(r'\d{4} (.*)  \w\w')
 
 sep = ';'
 unit_max = 50.00
@@ -47,7 +50,6 @@ toolsFile = open(toolName, 'w')
 outputInvoice = csv.writer(outputFile)
 outputTools = csv.writer(toolsFile)
 
-# outputInvoice.writerow(qb_header)
 header_dict = set_dict(record_keys, qb_header)
 print_record(outputInvoice, header_dict, record_keys)
 
@@ -57,7 +59,7 @@ update_dict(record_dict, vendor_keys, vendor_val)
 i_terms = vendor_val[1]
 
 print(ifile_name, ifile_vendor, cust_file)
-data = pd.read_csv(ifile_name, header=5, usecols=['Invoice Date', 'Store Number and Name', 'Invoice Number', 'Invoice Due Date', 'PO# / Job Name', 'SKU Description', 'Quantity', 'Original Unit Price', 'Invoice Total'], nrows=550)
+data = pd.read_csv(ifile_name, header=5, usecols=HEADER_COLS, nrows=550)
 
 rowls = iter(data.values.tolist())
 browls = next(rowls)
@@ -73,7 +75,7 @@ while browlsx != 'x':
 
     tool_text(browls, unit_max, toolName)
 
-#  assign stuff
+#  append unique line items to description field for same invoice number
     if inv_num == browlsx[2]:
         desc = browlsx[5]
         logging.debug('d list: %s invoice #: %s', browlsx[2], inv_num)
@@ -84,12 +86,13 @@ while browlsx != 'x':
         browls = browlsx
         logging.debug('d list: %s invoice #: %s', desc_list, inv_num)
 
-#            print(desc_list)
+#  dick out of description collection and load print field
     else:
-        idate, location, inv_num, date_due, ijobn, desc, qty, unitcost, cost = browls
+        idate, store_site, inv_num, date_due, ijobn, desc, qty, unitcost, cost = browls
         logging.debug('yes row: %s ', str(browls))
         desc_str = sep.join(desc_list)
         cust_job = f_cust_job(ijobn, overhead_now, overhead_last, cust_dict)
+        location = (locationRegex.search(store_site)).group(1)
         side = f_side(location)
         item_val = re.compile(overhead_x).search(cust_job)
         item = item_ck(item_val, 'Shop Supplies', 'Supplies')
